@@ -3257,7 +3257,7 @@ export function testApolloServer<AS extends ApolloServerBase>(
         expect(resolved.errors).toBeUndefined();
       });
 
-      it('can serve multiple active schemas simultaneously during a schema rollover', async () => {
+      it.only('can serve multiple active schemas simultaneously during a schema rollover', async () => {
         const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 
         const makeQueryTypeWithField = fieldName =>
@@ -3312,19 +3312,19 @@ export function testApolloServer<AS extends ApolloServerBase>(
         // TODO: Remove these awaits... I think it may require the `onSchemaChange` to block?
         const apolloFetch = createApolloFetch({ uri });
         const result1 = apolloFetch({ query: '{testString1}' });
-        await wait(100);
+        await wait(1);
         triggers.triggerSchemaChange(makeQueryTypeWithField('testString2'));
-        await wait(100);
+        await wait(1);
         const result2 = apolloFetch({ query: '{testString2}' });
-        await wait(100);
+        await wait(1);
         triggers.triggerSchemaChange(makeQueryTypeWithField('testString3'));
-        await wait(100);
+        await wait(1);
         const result3 = apolloFetch({ query: '{testString3}' });
-        await wait(100);
+        await wait(1);
         r3();
-        await wait(100);
+        await wait(1);
         r1();
-        await wait(100);
+        await wait(1);
         r2();
 
         await Promise.all([result1, result2, result3]).then(([v1, v2, v3]) => {
