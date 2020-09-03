@@ -22,7 +22,9 @@
     "books": "file:services/books",
     "gateway": "file:gateway",
     "products": "file:services/products",
-    "reviews": "file:services/reviews"
+    "reviews": "file:services/reviews",
+    "orders": "file:services/orders",
+    "policy": "file:services/policy"
   },
   "devDependencies": {
     "@types/react": "16.9.48",

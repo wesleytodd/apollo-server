@@ -1,0 +1,16 @@
+extend type Query {
+  """
+    The currently authenticated user root. All nodes off of this
+    root will be authenticated as the current user
+  """
+  policy: Policy
+}
+
+type Policy {
+  version: Int
+}
+
+extend type User @key(fields: "id") {
+  "A globally unique id for the user"
+  id: ID! @external
+}

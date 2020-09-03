@@ -1,0 +1,21 @@
+type Query {
+  """
+    The currently authenticated user root. All nodes off of this
+    root will be authenticated as the current user
+  """
+  orders: [Order]
+}
+
+"""
+  The base User in Acephei
+"""
+type Order @key(fields: "id") {
+  "A globally unique id for the user"
+  id: ID!
+  user: User!
+  isSettled: Boolean!
+}
+
+extend type User @key(fields: "id") {
+  id: ID! @external
+}
