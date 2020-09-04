@@ -4,6 +4,7 @@ extend type Query {
     root will be authenticated as the current user
   """
   policy: Policy
+
 }
 
 type Policy {
@@ -13,4 +14,11 @@ type Policy {
 extend type User @key(fields: "id") {
   "A globally unique id for the user"
   id: ID! @external
+}
+
+type Order @key(fields: "id") {
+  "A globally unique id for the user"
+  id: ID! @external
+  isSettled: Boolean!
+  isCurrentUser: Boolean!
 }

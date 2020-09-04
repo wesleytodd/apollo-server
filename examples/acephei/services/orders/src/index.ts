@@ -3,8 +3,6 @@ import { buildFederatedSchema } from "@apollo/federation";
 import { readFileSync } from "fs";
 import { resolve } from "path";
 
-import { UsersDataSource, User } from "./data";
-
 const typeDefs = gql(
   readFileSync(resolve(__dirname, "../schema.graphql"), { encoding: "utf8" })
 );
@@ -22,16 +20,12 @@ async function randomDelay(seconds = 0.07, jitterAmount = 0.7) {
 
 const resolvers: any = {
   Query: {
-    async me(_parent, _args, { dataSources, userID }: Context) {
-      if (!userID)
-        return new AuthenticationError(
-          "You must be logged in to view this data"
-        );
-      await randomDelay();
-      return dataSources.users.find(userID);
+    async orders(_parent, _args, { dataSources, userID }: Context) {
+      // TODO: mock data
+      return {};
     }
   },
-  User: {
+  Order: {
     async __resolveReference(user: Pick<User, "id">, { dataSources }: Context) {
       await randomDelay();
       return dataSources.users.find(user.id);

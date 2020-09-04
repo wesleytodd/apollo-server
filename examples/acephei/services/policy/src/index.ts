@@ -20,24 +20,26 @@ async function randomDelay(seconds = 0.07, jitterAmount = 0.7) {
   await new Promise(r => setTimeout(r, jitter(seconds, jitterAmount)));
 }
 
-const resolvers: any = {
-  Query: {
-    async me(_parent, _args, { dataSources, userID }: Context) {
-      if (!userID)
-        return new AuthenticationError(
-          "You must be logged in to view this data"
-        );
-      await randomDelay();
-      return dataSources.users.find(userID);
-    }
-  },
-  User: {
-    async __resolveReference(user: Pick<User, "id">, { dataSources }: Context) {
-      await randomDelay();
-      return dataSources.users.find(user.id);
-    }
-  }
-};
+//Stub resolvers
+
+// const resolvers: any = {
+//   Query: {
+//     async me(_parent, _args, { dataSources, userID }: Context) {
+//       if (!userID)
+//         return new AuthenticationError(
+//           "You must be logged in to view this data"
+//         );
+//       await randomDelay();
+//       return dataSources.users.find(userID);
+//     }
+//   },
+//   User: {
+//     async __resolveReference(user: Pick<User, "id">, { dataSources }: Context) {
+//       await randomDelay();
+//       return dataSources.users.find(user.id);
+//     }
+//   }
+// };
 
 interface Context {
   userID: string;

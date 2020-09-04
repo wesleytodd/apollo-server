@@ -1,9 +1,10 @@
 type Query {
   """
-    The currently authenticated user root. All nodes off of this
-    root will be authenticated as the current user
+    Testing policy, example:
+      @policy(name:"Allow my settled orders" condition:"order { isCurrentUser isSettled }")
   """
   orders: [Order]
+
 }
 
 """
@@ -13,9 +14,9 @@ type Order @key(fields: "id") {
   "A globally unique id for the user"
   id: ID!
   user: User!
-  isSettled: Boolean!
 }
 
 extend type User @key(fields: "id") {
   id: ID! @external
+  orders: [Order]
 }
