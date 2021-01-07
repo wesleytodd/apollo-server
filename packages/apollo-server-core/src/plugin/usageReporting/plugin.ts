@@ -378,11 +378,13 @@ export function ApolloServerPluginUsageReporting<TContext>(
 
           // Help the user understand they've returned an unexpected value,
           // which might be a subtle mistake.
-          if (typeof metrics.captureTraces !== 'boolean') {
+          if (metrics.captureTraces && typeof metrics.captureTraces !== 'boolean') {
             logger.warn(
               "The 'includeRequest' async predicate function must return a boolean value.",
             );
-            metrics.captureTraces = true;
+
+            // We may want to not capture traces in an ApolloGateway based on errors from downstream services
+            // metrics.captureTraces = true;
           }
         }
 
@@ -409,7 +411,12 @@ export function ApolloServerPluginUsageReporting<TContext>(
           endDone = true;
           treeBuilder.stopTiming();
 
-          if (metrics.captureTraces === undefined) {
+          if (metrics.captureTraces === undefined && typeof options.includeRequest === 'function') {
+            metrics.captureTraces = true;
+            logger.warn(
+              "The 'includeRequest' async predicate function must return a boolean value and `undefined was returned. Defaulting to capture",
+            );
+          } else if (metrics.captureTraces === undefined) {
             logger.warn(
               'captureTrace is undefined at the end of the request. This is a bug in ApolloServerPluginUsageReporting.',
             );
