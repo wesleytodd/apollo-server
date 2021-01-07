@@ -26,14 +26,14 @@ export function ApolloServerPluginInlineTrace(
       return 'InlineTrace';
     },
     requestDidStart({ request: { http } }) {
-      const treeBuilder = new TraceTreeBuilder({
-        rewriteError: options.rewriteError,
-      });
-
       // XXX Provide a mechanism to customize this logic.
       if (http?.headers.get('apollo-federation-include-trace') !== 'ftv1') {
         return;
       }
+
+      const treeBuilder = new TraceTreeBuilder({
+        rewriteError: options.rewriteError,
+      });
 
       treeBuilder.startTiming();
 
