@@ -399,7 +399,7 @@ export function ApolloServerPluginUsageReporting<TContext>(
          * check the `requestPipeline.ts` for `emitErrorAndThrow`.
          */
         let endDone: boolean = false;
-        function didEnd(
+        async function didEnd(
           requestContext:
             | GraphQLRequestContextWillSendResponse<TContext>
             // Our didEncounterErrors handler only calls this function if didResolveSource.
@@ -412,10 +412,11 @@ export function ApolloServerPluginUsageReporting<TContext>(
           treeBuilder.stopTiming();
 
           if (metrics.captureTraces === undefined && typeof options.includeRequest === 'function') {
-            metrics.captureTraces = true;
-            logger.warn(
-              "The 'includeRequest' async predicate function must return a boolean value and `undefined was returned. Defaulting to capture",
-            );
+            await shouldIncludeRequest(requestContext as any);
+            if (metrics.captureTraces === undefined)
+              logger.warn(
+                "The 'includeRequest' async predicate function must return a boolean value and `undefined was returned. Defaulting to capture",
+              );
           } else if (metrics.captureTraces === undefined) {
             logger.warn(
               'captureTrace is undefined at the end of the request. This is a bug in ApolloServerPluginUsageReporting.',
