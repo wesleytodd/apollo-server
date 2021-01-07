@@ -4,6 +4,7 @@ import {
   GraphQLRequestContextDidEncounterErrors,
   Logger,
   GraphQLRequestContext,
+  GraphQLRequestContextWillSendResponse,
 } from 'apollo-server-types';
 import { RequestAgent } from 'apollo-server-env';
 
@@ -92,6 +93,9 @@ export interface ApolloServerPluginUsageReportingOptions<TContext> {
     request:
       | GraphQLRequestContextDidResolveOperation<TContext>
       | GraphQLRequestContextDidEncounterErrors<TContext>,
+  ) => Promise<boolean>;
+  includeResponse?: (
+    response:GraphQLRequestContextWillSendResponse<TContext>
   ) => Promise<boolean>;
   /**
    * By default, this plugin associates client information such as name

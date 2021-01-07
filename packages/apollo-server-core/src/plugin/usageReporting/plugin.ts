@@ -386,6 +386,26 @@ export function ApolloServerPluginUsageReporting<TContext>(
           }
         }
 
+        async function shouldIncludeResponse(
+          requestContext:
+            | GraphQLRequestContextWillSendResponse<TContext>,
+        ): Promise<void> {
+          if (typeof options.includeResponse !== 'function') {
+            return;
+          }
+
+          metrics.captureTraces = await options.includeResponse(requestContext);
+
+          // Help the user understand they've returned an unexpected value,
+          // which might be a subtle mistake.
+          if (typeof metrics.captureTraces !== 'boolean') {
+            logger.warn(
+              "The 'includeRequest' async predicate function must return a boolean value.",
+            );
+            metrics.captureTraces = true;
+          }
+        }
+
         /**
          * Due to a number of exceptions in the request pipeline — which are
          * intended to preserve backwards compatible behavior with the
@@ -644,9 +664,10 @@ export function ApolloServerPluginUsageReporting<TContext>(
               },
             };
           },
-          willSendResponse(requestContext) {
+          async willSendResponse(requestContext) {
             // shouldTraceOperation will be called before this in `didResolveOperation`
             // so we don't need to call it again here.
+            await shouldIncludeResponse(requestContext);
 
             // See comment above for why `didEnd` must be called in two hooks.
             didEnd(requestContext);
