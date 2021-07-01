@@ -14,12 +14,13 @@ In the following sections, we'll set up a "Hello World" API and frontend for an 
 
 ## Download and Run the Netlify Starter Kit
 
-Download and run the [official Netlify `create-react-app` and Lambda starter kit](https://github.com/netlify/create-react-app-lambda). This will set us up with a base for our frontend and API code.
+Download and run the [official Netlify `create-react-app` and Lambda starter kit](https://github.com/netlify/create-react-app-lambda). This will set us up with a base for our frontend and API code. Note: these instructions are copied from their Github README [here](https://github.com/netlify/create-react-app-lambda#local-development)
 
 ```bash
-git clone https://github.com/netlify/create-react-app-lambda.git
-cd create-react-app-lambda
-npm install
+npm i -g netlify-cli # Make sure you have the [Netlify CLI](https://github.com/netlify/cli) installed
+git clone https://github.com/netlify/create-react-app-lambda ## clone this repo
+cd create-react-app-lambda ## change into this repo
+yarn # install all dependencies
 ```
 
 Let’s take a quick look at the file structure here:
@@ -43,11 +44,8 @@ In `package.json`, you'll find scripts to run the frontend and lambda code:
 Run the code to see that everything is working. We have to open two terminal windows to run the frontend and functions at the same time:
 
 ```bash
-# In the first terminal, run the local development server.
-# This emulates the Netlify Functions runtime environment.
-npm run start:lambda
-# In the second terminal, start the React frontend application.
-npm start
+## done every time you start up this project
+ntl dev ## nice shortcut for `netlify dev`, starts up create-react-app AND a local Node.js server for your Netlify functions
 ```
 
 If everything looks like it started correctly, let's add a GraphQL API with Apollo Server!
@@ -57,13 +55,12 @@ If everything looks like it started correctly, let's add a GraphQL API with Apol
 Netlify Functions run on AWS Lambda, so we can use the `apollo-server-lambda` package to easily integrate Apollo Server for our API layer. Let’s install the packages we need for that:
 
 ```bash
-npm install --save apollo-server-lambda graphql
+yarn add apollo-server-lambda @apollo/client graphql
 ```
 
 Now, we can create a "Hello world" GraphQL API. Let's put that in a new file in the `lambda` folder, at `src/lambda/graphql.js`:
 
-```js
-// src/lambda/graphql.js
+```js:title=src/lambda/graphql.js
 const { ApolloServer, gql } = require("apollo-server-lambda");
 
 const typeDefs = gql`
@@ -88,7 +85,7 @@ const server = new ApolloServer({
 exports.handler = server.createHandler();
 ```
 
-Now, make sure you've run `NODE_ENV=development npm run start:lambda`, and navigate to `localhost:9000/graphql` in your browser. You should see your server's landing page!
+Now, make sure you've run `NODE_ENV=development npm run start:lambda`, and navigate to `localhost:8888/graphql` in your browser. You should see your server's landing page!
 
 If your `NODE_ENV` is not set to `production`, you will see a link <q>Query your Server</q> which should take you to Apollo Sandbox where you can query your app. If you can see the landing page and run a simple query from Sandbox, you've done everything properly. Now, let's add Apollo Client to the frontend.
 
@@ -96,11 +93,11 @@ If your `NODE_ENV` is not set to `production`, you will see a link <q>Query your
 
 The starter kit is set up so that requests that start with `.netlify/functions` are automatically redirected to the Lambda functions in our project. Since our API is defined with the filename `graphql.js`, we can call it with `.netlify/functions/graphql` from our frontend.
 
-```js
-// src/App.js
-import ApolloClient from "apollo-boost";
+```js:title=src/App.js
+import { ApolloClient, InMemoryCache } from "@apollo/client";
 const client = new ApolloClient({
-  uri: "/.netlify/functions/graphql"
+  uri: "/.netlify/functions/graphql",
+  cache: new InMemoryCache(),
 });
 ```
 
