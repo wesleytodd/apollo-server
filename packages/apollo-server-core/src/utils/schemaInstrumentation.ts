@@ -53,6 +53,11 @@ function wrapField(field: GraphQLField<any, any>): void {
       | GraphQLFieldResolver<any, any>
       | undefined;
 
+    const fieldResolver =
+      originalFieldResolve || userFieldResolver || defaultFieldResolver;
+
+    info.isDefaultResolver = () => fieldResolver === defaultFieldResolver;
+
     // The technique for implementing a  "did resolve field" is accomplished by
     // returning a function from the `willResolveField` handler.  While there
     // may be several callbacks, depending on the number of plugins which have
@@ -86,9 +91,6 @@ function wrapField(field: GraphQLField<any, any>): void {
         parentPath.__whenObjectResolved = whenObjectResolved;
       }
     }
-
-    const fieldResolver =
-      originalFieldResolve || userFieldResolver || defaultFieldResolver;
 
     try {
       let result: any;
